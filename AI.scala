@@ -3,15 +3,18 @@ import scala.collection.mutable.ArrayBuffer
 
 class AI(private var player: Player, private var depth: Int) extends Solver {
 
-  override def getMoves(b: Board): Array[Move] = { null }
+  override def getMoves(b: Board): Array[Move] = {
+    
+  }
 
   // referenced Minimax pseudocode on Wikipedia
   def minimax(s: State): Int = {
-    
+
     // Remember that the AI is player, who wants max value
 
-    if (s.getChildren() == null) { // This is a leaf node
-      s.value = evaluateBoard(s.getBoard()) // returns s.value
+    if (s.getChildren().length == 0) { // This is a leaf node
+      println("In a leaf node")
+      s.setValue(evaluateBoard(s.getBoard())) // returns s.value
     } 
     
     if (s.getPlayer() == player) { // This is the maximising player
