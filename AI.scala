@@ -3,42 +3,70 @@ import scala.collection.mutable.ArrayBuffer
 
 class AI(private var player: Player, private var depth: Int) extends Solver {
 
+  // Remember that the AI is player, who wants max value
+  
+  
   override def getMoves(b: Board): Array[Move] = {
     
+    val currentState = new State(player, b, null)
+    AI.createGameTree(currentState, depth)    
+    minimax(currentState)
+    
+    currentState.writeToFile() // debugging
+    
+    val movetemp = Array(new Move(player, 5))
+    movetemp
+    
+    // ask classmates! - this code isn't working (GRRRRR!)
+    // we want to filter out values that 
+    //val tempChildren = currentState.getChildren()
+    //tempChildren.filter(child => child.getValue == currentStateValue)
+    //            .foreach(state => state.getLastMove)   
+    //})
   }
 
+  
   // referenced Minimax pseudocode on Wikipedia
-  def minimax(s: State): Int = {
-
-    // Remember that the AI is player, who wants max value
-
-    if (s.getChildren().length == 0) { // This is a leaf node
-      println("In a leaf node")
-      s.setValue(evaluateBoard(s.getBoard())) // returns s.value
-    } 
-    
-    if (s.getPlayer() == player) { // This is the maximising player
-      var bestValue = Int.MinValue
+  def minimax(s: State): Unit = {
+   
+    def getMax(s: State): Int = {
+    // if a leaf node, give the node a score
+      if (s.getChildren().length == 0) {
+        s.setValue(evaluateBoard(s.getBoard))
+        s.getValue        
+      } else {
       
-      var tempChildren = s.getChildren() 
-      tempChildren.foreach(child => {
-        val childBestValue = minimax(child)
-        if (childBestValue > bestValue)
-          bestValue = childBestValue 
-      })
-      bestValue
+        var bestValue = Int.MinValue
+        var tempChildren = s.getChildren() 
+        tempChildren.foreach(child => {
+          val childBestValue = getMin(child)
+          if (childBestValue > bestValue)
+            bestValue = childBestValue 
+        })
+        s.setValue(bestValue)
+        bestValue
+      }
     }
     
-    else { // player is opponent
-      var bestValue = Int.MaxValue
+    def getMin(s: State): Int = {
       
-      var tempChildren = s.getChildren()
-      tempChildren.foreach(child => {
-        val childBestValue = minimax(child)
-        if (childBestValue < bestValue)
-          bestValue = childBestValue
-      })
-      bestValue
+      // if a leaf node, give the node a score
+      if (s.getChildren().length == 0) {
+        s.setValue(evaluateBoard(s.getBoard))
+        s.getValue        
+      } else {
+      
+        var bestValue = Int.MaxValue
+      
+        var tempChildren = s.getChildren()
+        tempChildren.foreach(child => {
+          val childBestValue = getMax(child)
+          if (childBestValue < bestValue)
+            bestValue = childBestValue
+        })
+        s.setValue(bestValue)
+        bestValue
+      }
     }
   }
 
@@ -80,17 +108,16 @@ object AI {
    *
    * Note: If s has a winner (four in a row), it should be a leaf.
    */
-  def createGameTree(s: State, d: Int): Boolean = {
+  def createGameTree(s: State, d: Int): Unit = {
     if (d != 0) {
       s.initializeChildren()
       val tempChildren = s.getChildren()
       tempChildren.foreach(child => createGameTree(child, d-1))
-      true
     }
-    false // Why does CreateGameTree need a return type?
   }
    
   def minimax(ai: AI, s: State) {
+ 
     ai.minimax(s)
   }
 }
