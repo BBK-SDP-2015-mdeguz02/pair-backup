@@ -45,7 +45,7 @@ class Board {
     possibleMoves.toArray
   }
 
-  override def toString(): String = ???
+  override def toString(): String = { "" }
 
   def toString(prefix: String): String = {
     val str = new StringBuilder("")

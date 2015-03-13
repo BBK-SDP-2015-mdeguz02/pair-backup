@@ -15,7 +15,33 @@ class State(@BeanProperty var player: Player, @BeanProperty var board: Board, @B
   @BeanProperty
   var value: Int = 0
 
+  /**
+   * Retrieves the possible moves and initializes this State's children.
+   * The result is that this State's children reflect the possible
+   * States that can exist after the next move. Remember, in the
+   * children it is the opposite player's turn. This method
+   * initializes only this State's children; it does not recursively
+   * initialize all descendants.
+   */
   def initializeChildren() {
+    val possibleMoves: Array[Move] = board.getPossibleMoves(player)
+    val states = scala.collection.mutable.ArrayBuffer.empty[State]
+    
+    for (i <- 0 to possibleMoves.length - 1) { 
+      var boardCopy: Board = new Board(board, possibleMoves(i))
+      states += new State(player.opponent, boardCopy, lastMove)
+    }
+    children = states.toArray    
+    
+    // this successfully prints current state and direct children nodes (one level down)
+    // writeToFile() 
+    
+    /* Need to make use of functional aspects of Scala!
+    
+    possibleMoves.foreach(x => {
+      val tempB = new Board(board, x) 
+      val tempS = new State(player.opponent, tempB, lastMove)  
+    }). */
   }
 
   def writeToFile() {
@@ -23,7 +49,7 @@ class State(@BeanProperty var player: Player, @BeanProperty var board: Board, @B
     try {
       writer.println(this)
     } catch {
-      case e@(_: FileNotFoundException | _: UnsupportedEncodingException) => e.printStackTrace()
+      case e @ (_: FileNotFoundException | _: UnsupportedEncodingException) => e.printStackTrace()
     } finally {
       writer.close();
     }

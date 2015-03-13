@@ -1,10 +1,12 @@
 package connectfour
+import scala.collection.mutable.ArrayBuffer
 
 class AI(private var player: Player, private var depth: Int) extends Solver {
 
-  override def getMoves(b: Board): Array[Move] = ???
+  override def getMoves(b: Board): Array[Move] = { null }
 
   def minimax(s: State) {
+    // NEXT
   }
 
   def evaluateBoard(b: Board): Int = {
@@ -34,8 +36,27 @@ class AI(private var player: Player, private var depth: Int) extends Solver {
 
 object AI {
 
-  def createGameTree(s: State, d: Int) = ???
-
+  /**
+   * Generate the game tree with root s of depth d.
+   * The game tree's nodes are State objects that represent the state of a game
+   * and whose children are all possible States that can result from the next move.
+   *
+   * NOTE: this method runs in exponential time with respect to d.
+   * With d around 5 or 6, it is extremely slow and will start to take a very
+   * long time to run.
+   *
+   * Note: If s has a winner (four in a row), it should be a leaf.
+   */
+  def createGameTree(s: State, d: Int): Boolean = {
+    if (d != 0) {
+      s.initializeChildren()
+      val tempChildren = s.getChildren()
+      tempChildren.foreach(child => createGameTree(child, d-1))
+      true
+    }
+    false // Why does CreateGameTree need a return type?
+  }
+   
   def minimax(ai: AI, s: State) {
     ai.minimax(s)
   }
