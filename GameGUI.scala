@@ -9,7 +9,7 @@ object GameGUI extends App {
          * as parameters, with the a depth used to recurse when searching the
          * game space. */
 
-  val p1 = new AI(RED, 3);
+  val p1 = new AI(RED, 10);
   val p2 = new Human(YELLOW);
 
   val b = new Board()
@@ -34,7 +34,10 @@ object GameGUI extends App {
   val currentState = new State(YELLOW, b, move8)
   // currentState.initializeChildren()
   
-  AI.createGameTree(currentState, 3) // create tree to depth 3
+  AI.createGameTree(currentState, 2) // create tree to depth 3
+  
+  // Now test Minimax
+  AI.minimax(p1, currentState)
   currentState.writeToFile() // SUCCESS!
   
   /* --------------------------------- Do not change below here. --------------------------------- */

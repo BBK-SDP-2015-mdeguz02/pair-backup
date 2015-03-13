@@ -5,8 +5,38 @@ class AI(private var player: Player, private var depth: Int) extends Solver {
 
   override def getMoves(b: Board): Array[Move] = { null }
 
-  def minimax(s: State) {
-    // NEXT
+  // referenced Minimax pseudocode on Wikipedia
+  def minimax(s: State): Int = {
+    
+    // Remember that the AI is player, who wants max value
+
+    if (s.getChildren() == null) { // This is a leaf node
+      s.value = evaluateBoard(s.getBoard()) // returns s.value
+    } 
+    
+    if (s.getPlayer() == player) { // This is the maximising player
+      var bestValue = Int.MinValue
+      
+      var tempChildren = s.getChildren() 
+      tempChildren.foreach(child => {
+        val childBestValue = minimax(child)
+        if (childBestValue > bestValue)
+          bestValue = childBestValue 
+      })
+      bestValue
+    }
+    
+    else { // player is opponent
+      var bestValue = Int.MaxValue
+      
+      var tempChildren = s.getChildren()
+      tempChildren.foreach(child => {
+        val childBestValue = minimax(child)
+        if (childBestValue < bestValue)
+          bestValue = childBestValue
+      })
+      bestValue
+    }
   }
 
   def evaluateBoard(b: Board): Int = {
