@@ -5,6 +5,7 @@ import java.io.PrintWriter
 import java.io.UnsupportedEncodingException
 import scala.beans.BeanProperty
 import State._
+import scala.collection.mutable.ArrayBuffer
 
 class State(@BeanProperty var player: Player, @BeanProperty var board: Board, @BeanProperty var lastMove: Move)
   extends Comparable[Any] {
@@ -23,28 +24,24 @@ class State(@BeanProperty var player: Player, @BeanProperty var board: Board, @B
    * initializes only this State's children; it does not recursively
    * initialize all descendants.
    */
-  def initializeChildren() {
-    val possibleMoves: Array[Move] = board.getPossibleMoves(player)
+  def initializeChildren(): Unit = {
+
     val states = scala.collection.mutable.ArrayBuffer.empty[State]
+    val possibleMoves: Array[Move] = board.getPossibleMoves(player)
     
-    for (i <- 0 to possibleMoves.length - 1) { 
-      var boardCopy: Board = new Board(board, possibleMoves(i))
-      states += new State(player.opponent, boardCopy, lastMove)
-    }
-    children = states.toArray    
-    
+    possibleMoves.foreach(possMove => {
+      val boardCopy = new Board(board, possMove)
+      if (this.getPlayer.equals(player))
+        states += new State(player.opponent, boardCopy, possMove)
+      else
+        states += new State(player, boardCopy, possMove)
+    })
+    children = states.toArray
     // this successfully prints current state and direct children nodes (one level down)
     // writeToFile() 
-    
-    /* Need to make use of functional aspects of Scala!
-    
-    possibleMoves.foreach(x => {
-      val tempB = new Board(board, x) 
-      val tempS = new State(player.opponent, tempB, lastMove)  
-    }). */
-  }
+  }   
 
-  def writeToFile() {
+def writeToFile() {
     var writer: PrintWriter = new PrintWriter("output.txt", "UTF-8")
     try {
       writer.println(this)
